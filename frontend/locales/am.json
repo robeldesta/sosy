@@ -1,0 +1,42 @@
+{
+  "common": {
+    "back": "ተመለስ",
+    "save": "አስቀምጥ",
+    "cancel": "ተወው",
+    "delete": "ሰርዝ",
+    "edit": "አርም"
+  },
+  "dashboard": {
+    "title": "ዳሽቦርድ",
+    "stock": "ክምችት",
+    "stockDesc": "ክምችትዎን ያቀናብሩ",
+    "invoice": "አየንቮይስ",
+    "invoiceDesc": "አየንቮይስ ይፍጠሩ እና ያቀናብሩ",
+    "settings": "ቅንብሮች",
+    "settingsDesc": "ንግድዎን ያውቅሩ"
+  },
+  "stock": {
+    "title": "ክምችት አስተዳደር",
+    "add": "ንጥል ጨምር",
+    "addNew": "አዲስ ክምችት ንጥል ጨምር",
+    "addPlaceholder": "ክምችት መጨመሪያ ቅጹ እዚህ ይተገበራል",
+    "list": "ክምችት ዝርዝር",
+    "listPlaceholder": "ክምችት ዝርዝር እዚህ ይታያል"
+  },
+  "invoice": {
+    "title": "አየንቮይስ አስተዳደር",
+    "create": "አየንቮይስ ፍጠር",
+    "createNew": "አዲስ አየንቮይስ ፍጠር",
+    "createPlaceholder": "አየንቮይስ መፍጠሪያ ቅጹ እዚህ ይተገበራል",
+    "list": "አየንቮይስ ዝርዝር",
+    "listPlaceholder": "አየንቮይስ ዝርዝር እዚህ ይታያል"
+  },
+  "settings": {
+    "title": "ቅንብሮች",
+    "businessInfo": "የንግድ መረጃ",
+    "businessPlaceholder": "የንግድ መረጃ ቅጹ እዚህ ይተገበራል",
+    "businessName": "የንግድ ስም",
+    "language": "ቋንቋ"
+  }
+}
+

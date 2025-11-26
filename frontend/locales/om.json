@@ -1,0 +1,42 @@
+{
+  "common": {
+    "back": "Duubsi",
+    "save": "Qabsi",
+    "cancel": "Dhiisi",
+    "delete": "Haquu",
+    "edit": "Gara galchi"
+  },
+  "dashboard": {
+    "title": "Daashboordii",
+    "stock": "Qabiyyee",
+    "stockDesc": "Qabiyyee keessan bulchi",
+    "invoice": "Invooyisii",
+    "invoiceDesc": "Invooyisii uumuufi bulchi",
+    "settings": "Iggitaalee",
+    "settingsDesc": "Bizinansiin keessan sirreessi"
+  },
+  "stock": {
+    "title": "Bulchiinsa Qabiyyee",
+    "add": "Wanti Dabalchi",
+    "addNew": "Wanti Qabiyyee Haaraa Dabalchi",
+    "addPlaceholder": "Formii dabaluu qabiyyee kanas achitti hojjetama",
+    "list": "Tarree Qabiyyee",
+    "listPlaceholder": "Tarree qabiyyee kanas achitti agarsiifama"
+  },
+  "invoice": {
+    "title": "Bulchiinsa Invooyisii",
+    "create": "Invooyisii Uumu",
+    "createNew": "Invooyisii Haaraa Uumu",
+    "createPlaceholder": "Formii uumuu invooyisii kanas achitti hojjetama",
+    "list": "Tarree Invooyisii",
+    "listPlaceholder": "Tarree invooyisii kanas achitti agarsiifama"
+  },
+  "settings": {
+    "title": "Iggitaalee",
+    "businessInfo": "Odeeffannoo Bizinansii",
+    "businessPlaceholder": "Formii odeeffannoo bizinansii kanas achitti hojjetama",
+    "businessName": "Maqaa Bizinansii",
+    "language": "Afaan"
+  }
+}
+

@@ -1,0 +1,42 @@
+{
+  "common": {
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "stock": "Stock",
+    "stockDesc": "Manage your inventory",
+    "invoice": "Invoices",
+    "invoiceDesc": "Create and manage invoices",
+    "settings": "Settings",
+    "settingsDesc": "Configure your business"
+  },
+  "stock": {
+    "title": "Stock Management",
+    "add": "Add Item",
+    "addNew": "Add New Stock Item",
+    "addPlaceholder": "Stock add form will be implemented here",
+    "list": "Stock List",
+    "listPlaceholder": "Stock list will be displayed here"
+  },
+  "invoice": {
+    "title": "Invoice Management",
+    "create": "Create Invoice",
+    "createNew": "Create New Invoice",
+    "createPlaceholder": "Invoice creation form will be implemented here",
+    "list": "Invoice List",
+    "listPlaceholder": "Invoice list will be displayed here"
+  },
+  "settings": {
+    "title": "Settings",
+    "businessInfo": "Business Information",
+    "businessPlaceholder": "Business information form will be implemented here",
+    "businessName": "Business Name",
+    "language": "Language"
+  }
+}
+
