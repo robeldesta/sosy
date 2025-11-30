@@ -5,6 +5,10 @@ from datetime import datetime
 
 class BusinessBase(BaseModel):
     name: str
+    business_type: Optional[str] = None
+    location: Optional[str] = None
+    currency: Optional[str] = "ETB"
+    tax_type: Optional[str] = None
     tax_id: Optional[str] = None
     address: Optional[str] = None
     phone: Optional[str] = None
@@ -17,6 +21,10 @@ class BusinessCreate(BusinessBase):
 
 class BusinessUpdate(BaseModel):
     name: Optional[str] = None
+    business_type: Optional[str] = None
+    location: Optional[str] = None
+    currency: Optional[str] = None
+    tax_type: Optional[str] = None
     tax_id: Optional[str] = None
     address: Optional[str] = None
     phone: Optional[str] = None
@@ -31,4 +39,3 @@ class BusinessResponse(BusinessBase):
     
     class Config:
         from_attributes = True
-

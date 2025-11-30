@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from app.models.stock import StockItem
+from app.models.stock import LegacyStockItem as StockItem
 from app.schemas.stock import StockItemCreate
 
 

@@ -4,7 +4,8 @@ from datetime import datetime
 from app.models.business import Business
 
 
-class StockItem(SQLModel, table=True):
+class LegacyStockItem(SQLModel, table=True):
+    __tablename__ = "legacy_stock_item"
     id: Optional[int] = Field(default=None, primary_key=True)
     business_id: int = Field(foreign_key="business.id")
     name: str
@@ -16,4 +17,3 @@ class StockItem(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     
     business: Optional[Business] = Relationship()
-

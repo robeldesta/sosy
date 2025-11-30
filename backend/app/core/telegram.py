@@ -4,19 +4,22 @@ from typing import Dict, Optional
 from app.core.config import settings
 
 
-def verify_telegram_auth(data: Dict[str, str]) -> bool:
+def verify_telegram_auth(data: Dict[str, str]) -> Optional[Dict]:
     """
     Verify Telegram authentication data.
     See: https://core.telegram.org/widgets/login#checking-authorization
+    
+    Returns the user data dict if valid, None otherwise
     """
     if not settings.TELEGRAM_BOT_TOKEN:
         # In development, skip verification if bot token is not set
-        return True
+        # Return the data as-is (assuming it's valid)
+        return data if isinstance(data, dict) else None
     
     # Extract hash from data
     received_hash = data.pop("hash", None)
     if not received_hash:
-        return False
+        return None
     
     # Create data check string
     data_check_string = "\n".join(f"{k}={v}" for k, v in sorted(data.items()))
@@ -31,5 +34,7 @@ def verify_telegram_auth(data: Dict[str, str]) -> bool:
         hashlib.sha256
     ).hexdigest()
     
-    return calculated_hash == received_hash
+    if calculated_hash == received_hash:
+        return data
+    return None
 

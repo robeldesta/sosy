@@ -1,17 +1,22 @@
 from sqlmodel import Session, select
 from app.models.invoice import Invoice, InvoiceItem
-from app.models.stock import StockItem
-from app.schemas.invoice import InvoiceCreate
+from app.models.invoice_audit import InvoiceAuditLog
+from app.models.stock import LegacyStockItem as StockItem
+from app.schemas.invoice import InvoiceBase
+from app.services.invoice_numbering import generate_invoice_number
+from app.services.cashbook_service import create_cashbook_entry
+from app.services.activity_service import log_invoice_created, log_activity
 from datetime import datetime
+from typing import Optional
 
 
-def generate_invoice_number(business_id: int) -> str:
-    """Generate unique invoice number"""
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"INV-{business_id}-{timestamp}"
-
-
-def create_invoice(session: Session, business_id: int, invoice_data: InvoiceCreate) -> Invoice:
+def create_invoice(
+    session: Session,
+    business_id: int,
+    invoice_data: InvoiceBase,
+    created_by: Optional[int] = None,
+    template: Optional[str] = None
+) -> Invoice:
     """Create a new invoice with items"""
     # Calculate totals
     subtotal = 0.0
@@ -37,20 +42,36 @@ def create_invoice(session: Session, business_id: int, invoice_data: InvoiceCrea
             "total": item_total,
         })
     
-    # Calculate tax (15% VAT for Ethiopia)
-    tax = subtotal * 0.15
-    total = subtotal + tax
+    # Calculate discount
+    discount = invoice_data.discount if hasattr(invoice_data, 'discount') else 0.0
+    subtotal_after_discount = subtotal - discount
+    
+    # Calculate tax (15% VAT for Ethiopia) on discounted amount
+    tax = subtotal_after_discount * 0.15
+    total = subtotal_after_discount + tax
+    
+    # Generate invoice number
+    invoice_number = generate_invoice_number(session, business_id)
+    
+    # Determine payment mode and initial status
+    payment_mode = invoice_data.payment_mode or "cash"
+    initial_status = "unpaid" if payment_mode == "credit" else "draft"
+    invoice_template = template or invoice_data.template or "simple"
     
     # Create invoice
     invoice = Invoice(
         business_id=business_id,
-        invoice_number=generate_invoice_number(business_id),
+        invoice_number=invoice_number,
         customer_name=invoice_data.customer_name,
         customer_phone=invoice_data.customer_phone,
         subtotal=subtotal,
+        discount=discount,
         tax=tax,
         total=total,
-        status="draft",
+        status=initial_status,
+        payment_mode=payment_mode,
+        template=invoice_template,
+        created_by=created_by,
     )
     session.add(invoice)
     session.commit()
@@ -63,6 +84,39 @@ def create_invoice(session: Session, business_id: int, invoice_data: InvoiceCrea
             **item_data
         )
         session.add(invoice_item)
+    
+    # Create audit log entry
+    audit_log = InvoiceAuditLog(
+        invoice_id=invoice.id,
+        action="created",
+        new_status="draft",
+        changed_by=created_by,
+        notes="Invoice created"
+    )
+    session.add(audit_log)
+    
+    # Log activity
+    log_invoice_created(
+        session=session,
+        business_id=business_id,
+        invoice_id=invoice.id,
+        invoice_number=invoice.invoice_number,
+        user_id=created_by
+    )
+    
+    # Create cashbook entry if invoice is paid
+    if invoice.status == "paid":
+        create_cashbook_entry(
+            session=session,
+            business_id=business_id,
+            entry_type="payment_in",
+            amount=invoice.total,
+            description=f"Payment for invoice {invoice.invoice_number}",
+            payment_method="cash",  # Default, can be updated when payment is recorded
+            reference_id=invoice.id,
+            reference_type="invoice",
+            user_id=created_by
+        )
     
     session.commit()
     session.refresh(invoice)

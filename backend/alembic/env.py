@@ -2,7 +2,19 @@ from logging.config import fileConfig
 from sqlmodel import SQLModel
 from alembic import context
 from app.core.config import settings
-from app.models import User, Business, StockItem, Invoice, InvoiceItem
+from app.models import (
+    User,
+    Business,
+    LegacyStockItem,
+    Invoice,
+    InvoiceItem,
+    Product,
+    StockItem,
+    InventoryMovement,
+    Supplier,
+    Purchase,
+    PurchaseItem,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

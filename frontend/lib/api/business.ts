@@ -3,6 +3,10 @@ import { apiClient } from './client'
 export interface Business {
   id: number
   name: string
+  business_type?: string
+  location?: string
+  currency?: string
+  tax_type?: string
   tax_id?: string
   address?: string
   phone?: string
@@ -13,6 +17,10 @@ export interface Business {
 
 export interface UpdateBusiness {
   name?: string
+  business_type?: string
+  location?: string
+  currency?: string
+  tax_type?: string
   tax_id?: string
   address?: string
   phone?: string

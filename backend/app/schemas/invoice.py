@@ -25,10 +25,9 @@ class InvoiceBase(BaseModel):
     customer_name: Optional[str] = None
     customer_phone: Optional[str] = None
     items: List[InvoiceItemBase]
-
-
-class InvoiceCreate(InvoiceBase):
-    pass
+    discount: Optional[float] = 0.0
+    payment_mode: Optional[str] = "cash"  # cash, credit
+    template: Optional[str] = "simple"  # simple, modern, blue
 
 
 class InvoiceResponse(BaseModel):
@@ -39,11 +38,16 @@ class InvoiceResponse(BaseModel):
     customer_phone: Optional[str] = None
     items: List[InvoiceItemResponse]
     subtotal: float
+    discount: float
     tax: float
     total: float
     status: str
+    payment_mode: str
+    template: str
     created_at: datetime
     updated_at: datetime
+    created_by: Optional[int] = None
+    updated_by: Optional[int] = None
     
     class Config:
         from_attributes = True

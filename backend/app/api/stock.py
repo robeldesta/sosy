@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from typing import List
 from app.api.dependencies import get_db, get_current_user
 from app.models.user import User
-from app.models.stock import StockItem
+from app.models.stock import LegacyStockItem as StockItem
 from app.models.business import Business
 from app.schemas.stock import StockItemCreate, StockItemResponse
 from app.services.business import get_business_by_user_id

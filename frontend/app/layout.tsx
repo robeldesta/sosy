@@ -1,15 +1,17 @@
-import type { Metadata } from 'next'
+'use client'
+
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { TelegramProvider } from '@/components/telegram/TelegramProvider'
 import { I18nProvider } from '@/components/i18n/I18nProvider'
+import { Toast } from '@/components/ui/Toast'
+import { AuthInitializer } from '@/components/auth/AuthInitializer'
+import { OfflineIndicator } from '@/components/telegram/OfflineIndicator'
+import { SubscriptionWall } from '@/components/subscription/SubscriptionWall'
+import { SyncIndicator } from '@/components/sync/SyncIndicator'
+import { SyncInitializer } from '@/components/sync/SyncInitializer'
 
 const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-  title: 'SOSY - Stock Management',
-  description: 'Stock management and invoicing for Ethiopian micro retail businesses',
-}
 
 export default function RootLayout({
   children,
@@ -21,11 +23,15 @@ export default function RootLayout({
       <body className={inter.className}>
         <TelegramProvider>
           <I18nProvider>
-            {children}
+            <AuthInitializer />
+            <OfflineIndicator />
+            <SyncInitializer />
+            <SyncIndicator />
+            <SubscriptionWall>{children}</SubscriptionWall>
+            <Toast />
           </I18nProvider>
         </TelegramProvider>
       </body>
     </html>
   )
 }
-

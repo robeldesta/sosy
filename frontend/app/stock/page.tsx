@@ -1,47 +1,97 @@
 'use client'
 
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { StockList } from '@/components/stock/StockList'
+import { MovementForm } from '@/components/stock/MovementForm'
+import { TelegramButton } from '@/components/telegram/TelegramButton'
+import { TelegramCard } from '@/components/telegram/TelegramCard'
+import { BackButton } from '@/components/telegram/BackButton'
+import { useProductStore } from '@/stores/productStore'
+import { useTelegramWebApp } from '@/hooks/useTelegramWebApp'
+import { useBackButton } from '@/hooks/useBackButton'
 import Link from 'next/link'
 
 export default function StockPage() {
   const { t } = useTranslation()
-  const [showAddForm, setShowAddForm] = useState(false)
+  const { products, stockItems, loading, fetchProducts, fetchStock } = useProductStore()
+  const { user } = useTelegramWebApp()
+  const [showMovementForm, setShowMovementForm] = useState(false)
+  const addProductLinkRef = useRef<HTMLAnchorElement>(null)
+
+  useBackButton()
+
+  useEffect(() => {
+    fetchProducts()
+    fetchStock()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleRecordMovementClick = () => {
+    // Blur any focused elements to remove active states
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+    // Also blur the Add Product link specifically
+    if (addProductLinkRef.current) {
+      addProductLinkRef.current.blur()
+    }
+    setShowMovementForm(!showMovementForm)
+  }
 
   return (
-    <main className="flex min-h-screen flex-col p-8">
-      <div className="max-w-5xl w-full mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">{t('stock.title')}</h1>
-          <div className="flex gap-4">
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              {t('stock.add')}
-            </button>
-            <Link
-              href="/"
-              className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {t('common.back')}
-            </Link>
+    <div className="min-h-screen bg-[#f2f3f5] dark:bg-[#181818] pb-[80px]">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-white dark:bg-[#212121] border-b border-[#e5e5e5] dark:border-[#3a3a3a]">
+        <div className="flex items-center px-[14px] py-[12px]">
+          <BackButton />
+          <div className="flex-1">
+            <h1 className="text-[20px] font-semibold leading-[24px]">
+              {t('stock.title')}
+            </h1>
+            {user?.first_name && (
+              <div className="text-[14px] text-[#707579] mt-[2px]">
+                {user.first_name}
+              </div>
+            )}
           </div>
-        </div>
-
-        {showAddForm && (
-          <div className="mb-8 p-6 border rounded-lg bg-gray-50 dark:bg-gray-900">
-            <h2 className="text-2xl font-semibold mb-4">{t('stock.addNew')}</h2>
-            <p className="text-gray-600 dark:text-gray-400">{t('stock.addPlaceholder')}</p>
-          </div>
-        )}
-
-        <div className="border rounded-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4">{t('stock.list')}</h2>
-          <p className="text-gray-600 dark:text-gray-400">{t('stock.listPlaceholder')}</p>
         </div>
       </div>
-    </main>
+
+      {/* Content */}
+      <div className="px-[14px] pt-[8px]">
+        {/* Action Buttons */}
+        <div className="flex gap-[8px] mb-[12px]">
+          <Link href="/stock/add" className="flex-1" ref={addProductLinkRef}>
+            <TelegramButton variant="primary" fullWidth>
+              {t('stock.addProduct')}
+            </TelegramButton>
+          </Link>
+          <TelegramButton
+            variant="secondary"
+            onClick={handleRecordMovementClick}
+          >
+            {t('stock.recordMovement')}
+          </TelegramButton>
+        </div>
+
+        {/* Movement Form */}
+        {showMovementForm && (
+          <TelegramCard className="mb-[12px]">
+            <div className="text-[17px] font-medium mb-[12px]">
+              {t('stock.recordMovement')}
+            </div>
+            <MovementForm onSuccess={() => setShowMovementForm(false)} />
+          </TelegramCard>
+        )}
+
+        {/* Stock List */}
+        <StockList 
+          stockItems={stockItems} 
+          products={products}
+          loading={loading}
+        />
+      </div>
+    </div>
   )
 }
-
