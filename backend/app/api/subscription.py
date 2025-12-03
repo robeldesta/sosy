@@ -27,7 +27,7 @@ from app.services.payment_providers import (
 import uuid
 from datetime import datetime
 
-router = APIRouter(prefix="/subscription", tags=["subscription"])
+router = APIRouter(tags=["subscription"])
 
 
 class SubscriptionStatusResponse(BaseModel):
@@ -54,7 +54,7 @@ class PaymentVerificationRequest(BaseModel):
     order_id: Optional[str] = None  # For PayPal
 
 
-@router.get("/status", response_model=SubscriptionStatusResponse)
+@router.get("/billing/status", response_model=SubscriptionStatusResponse)
 async def get_subscription_status(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -216,6 +216,38 @@ async def cancel_user_subscription(
     }
 
 
+@router.get("/billing/history")
+async def get_billing_history(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get billing history for user"""
+    from app.models.subscription import PaymentTransaction
+    from sqlmodel import select
+    
+    transactions = db.exec(
+        select(PaymentTransaction)
+        .where(PaymentTransaction.user_id == current_user.id)
+        .order_by(PaymentTransaction.created_at.desc())
+        .limit(50)
+    ).all()
+    
+    return [{
+        "id": t.id,
+        "user_id": t.user_id,
+        "subscription_id": t.subscription_id,
+        "amount": t.amount,
+        "currency": t.currency,
+        "payment_provider": t.payment_provider,
+        "transaction_reference": t.transaction_reference,
+        "status": t.status,
+        "payment_method": t.payment_method,
+        "payment_metadata": t.payment_meta_data,
+        "created_at": t.created_at.isoformat() if t.created_at else None,
+        "completed_at": t.completed_at.isoformat() if t.completed_at else None,
+    } for t in transactions]
+
+
 @router.get("/plans")
 async def get_available_plans(
     current_user: User = Depends(get_current_user),
@@ -246,8 +278,8 @@ async def get_available_plans(
     ]
 
 
-@router.get("/history")
-async def get_payment_history(
+@router.get("/billing/history")
+async def get_billing_history(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

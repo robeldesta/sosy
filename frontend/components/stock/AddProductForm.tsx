@@ -9,6 +9,7 @@ import { useProductStore } from '@/stores/productStore'
 import { useToastStore } from '@/stores/toastStore'
 import { useTelegramWebApp } from '@/hooks/useTelegramWebApp'
 import { TelegramInput } from '@/components/telegram/TelegramInput'
+import { TelegramButton } from '@/components/telegram/TelegramButton'
 
 interface AddProductFormProps {
   onFormValidChange?: (isValid: boolean) => void
@@ -163,6 +164,21 @@ export function AddProductForm({ onFormValidChange }: AddProductFormProps) {
           placeholder="0"
         />
       </div>
+
+      {/* Fallback Save Button for non-Telegram environments */}
+      {!webApp && (
+        <TelegramButton
+          onClick={(e) => {
+            e.preventDefault()
+            handleSubmit(e as any)
+          }}
+          fullWidth
+          disabled={loading || !formData.name.trim() || formData.buying_price <= 0 || formData.selling_price <= 0}
+          className="mt-[16px]"
+        >
+          {loading ? t('common.saving') : t('stock.createProduct')}
+        </TelegramButton>
+      )}
     </form>
   )
 }

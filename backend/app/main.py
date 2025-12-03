@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, stock, invoice, business, inventory, supplier, purchase, dashboard, quick_sell, activity, profile, analytics, backup, stock_search, stock_analytics, stock_import, payment, expense, cashbook, credit, reports, permissions, invite, staff, branch, pos, sync, stock_take
+from app.api import auth, stock, invoice, business, inventory, supplier, purchase, dashboard, quick_sell, activity, profile, analytics, backup, stock_search, stock_analytics, stock_import, payment, expense, cashbook, credit, reports, permissions, invite, staff, branch, pos, sync, stock_take, subscription, customers
+from app.api.admin import businesses as admin_businesses, stats as admin_stats, subscriptions as admin_subscriptions
+from app.api import websocket
 from app.core.config import settings
 
 app = FastAPI(
@@ -45,8 +47,14 @@ app.include_router(invite.router, prefix="", tags=["invite"])
 app.include_router(staff.router, prefix="", tags=["staff"])
 app.include_router(branch.router, prefix="", tags=["branch"])
 app.include_router(pos.router, prefix="", tags=["pos"])
-app.include_router(sync.router, prefix="", tags=["sync"])
+app.include_router(sync.router, prefix="/sync", tags=["sync"])
 app.include_router(stock_take.router, prefix="", tags=["stocktake"])
+app.include_router(subscription.router, prefix="/subscription", tags=["subscription"])
+app.include_router(customers.router, prefix="", tags=["customers"])
+app.include_router(admin_businesses.router, prefix="", tags=["admin"])
+app.include_router(admin_stats.router, prefix="", tags=["admin"])
+app.include_router(admin_subscriptions.router, prefix="", tags=["admin"])
+app.include_router(websocket.router, prefix="", tags=["websocket"])
 
 
 @app.get("/")

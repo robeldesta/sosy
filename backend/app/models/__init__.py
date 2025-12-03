@@ -19,6 +19,14 @@ from app.models.subscription import SubscriptionPlan, UserSubscription, PaymentT
 from app.models.pos import Sale, SaleItem, POSSession
 from app.models.sync import SyncState, SyncAction
 from app.models.stock_take import StockTakeSession, StockTakeLine, StockAdjustment
+from app.models.customer import Customer
+from app.models.customer_credit import CustomerCreditEntry
+from app.models.customer_loyalty import CustomerLoyaltyEntry
+from app.models.admin_log import AdminLog
+from app.models.sync_event import SyncEvent
+from app.models.sync_error import SyncError
+from app.models.business_metrics import BusinessMetricsDaily
+from app.models.system_health import SystemHealth
 
 __all__ = [
     "User",
@@ -52,5 +60,13 @@ __all__ = [
     "StockTakeSession",
     "StockTakeLine",
     "StockAdjustment",
+    "Customer",
+    "CustomerCreditEntry",
+    "CustomerLoyaltyEntry",
+    "AdminLog",
+    "SyncEvent",
+    "SyncError",
+    "BusinessMetricsDaily",
+    "SystemHealth",
 ]
 

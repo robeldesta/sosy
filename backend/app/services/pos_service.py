@@ -86,6 +86,7 @@ def checkout(
     payment_method: str,
     customer_name: Optional[str] = None,
     customer_phone: Optional[str] = None,
+    customer_id: Optional[int] = None,
     discount: float = 0.0,
     notes: Optional[str] = None,
     branch_id: Optional[int] = None
@@ -227,6 +228,53 @@ def checkout(
         )
         session.add(invoice_item)
     
+    # Handle credit sales - create credit entry
+    if payment_method == "credit" and customer_id:
+        from app.services.credit_service import add_credit_entry
+        from app.schemas.customer import CreditEntryCreate
+        
+        try:
+            add_credit_entry(
+                session,
+                business_id,
+                user_id,
+                CreditEntryCreate(
+                    customer_id=customer_id,
+                    amount=total,
+                    sale_id=sale.id,
+                    invoice_id=invoice.id,
+                    reference=invoice_number,
+                    notes=notes
+                )
+            )
+        except Exception as e:
+            # Log error but don't fail the sale
+            print(f"Failed to create credit entry: {e}")
+    
+    # Handle loyalty points (earn points for all sales)
+    if customer_id and payment_method != "credit":
+        from app.services.loyalty_service import add_loyalty_entry, calculate_loyalty_points
+        from app.schemas.customer import LoyaltyEntryCreate
+        
+        try:
+            points = calculate_loyalty_points(total)
+            if points > 0:
+                add_loyalty_entry(
+                    session,
+                    business_id,
+                    user_id,
+                    LoyaltyEntryCreate(
+                        customer_id=customer_id,
+                        entry_type="earned",
+                        points=points,
+                        sale_id=sale.id,
+                        notes=f"Points earned from sale"
+                    )
+                )
+        except Exception as e:
+            # Log error but don't fail the sale
+            print(f"Failed to add loyalty points: {e}")
+    
     # Update POS session totals
     pos_session.total_sales += total
     pos_session.total_transactions += 1
@@ -253,6 +301,26 @@ def checkout(
         entity_id=sale.id,
         description=f"POS sale completed: {total} {payment_method}"
     )
+    
+    # Emit sync event for real-time updates
+    try:
+        from app.services.event_service import emit_sync_event, EVENT_SALE_CREATED
+        emit_sync_event(
+            session,
+            business_id,
+            EVENT_SALE_CREATED,
+            {
+                "sale_id": sale.id,
+                "total": total,
+                "payment_method": payment_method,
+                "items_count": len(sale_items)
+            },
+            branch_id=branch_id,
+            user_id=user_id
+        )
+    except Exception as e:
+        # Don't fail sale if event emission fails
+        print(f"Failed to emit sync event: {e}")
     
     return sale
 

@@ -30,6 +30,7 @@ class CheckoutRequest(BaseModel):
     payment_method: str  # cash, mobile_money, card, credit
     customer_name: Optional[str] = None
     customer_phone: Optional[str] = None
+    customer_id: Optional[int] = None  # Required if payment_method is "credit"
     discount: float = 0.0
     notes: Optional[str] = None
 

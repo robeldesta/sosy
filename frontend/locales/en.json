@@ -218,6 +218,7 @@
     "lastName": "Last Name",
     "phone": "Phone Number",
     "language": "Language",
+    "languageHint": "Language changes immediately. Click Save below to update your profile.",
     "telegramId": "Telegram ID",
     "updated": "Profile updated successfully",
     "updateError": "Failed to update profile"

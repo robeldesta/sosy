@@ -17,16 +17,17 @@ export function I18nProvider({ children }: I18nProviderProps) {
     setMounted(true)
     
     // After hydration, check if language needs to be updated
-    const savedLang = localStorage.getItem('i18nextLng')
-    if (savedLang && ['en', 'am', 'om'].includes(savedLang) && i18nInstance.language !== savedLang) {
-      i18nInstance.changeLanguage(savedLang)
-    }
+    // Use setTimeout to avoid React warning about updating during render
+    setTimeout(() => {
+      const savedLang = localStorage.getItem('i18nextLng')
+      if (savedLang && ['en', 'am', 'om', 'ti'].includes(savedLang) && i18nInstance.language !== savedLang) {
+        i18nInstance.changeLanguage(savedLang)
+      }
+    }, 0)
   }, [i18nInstance])
 
   // During SSR and initial render, always use English to prevent hydration mismatch
-  if (!mounted && i18nInstance.language !== 'en') {
-    i18nInstance.changeLanguage('en')
-  }
+  // Don't call changeLanguage during render - it's already set to 'en' in initI18n
 
   return <I18nextProvider i18n={i18nInstance}>{children}</I18nextProvider>
 }

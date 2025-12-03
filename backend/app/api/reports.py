@@ -14,7 +14,7 @@ from app.models.payment import Payment
 from app.models.product import Product
 from app.models.stock import LegacyStockItem
 from app.services.business import get_business_by_user_id
-from app.services.credit_service import get_customer_credit_summary
+from app.services.aging_service import get_aging_report
 
 router = APIRouter(prefix="/reports", tags=["reports"])
 
@@ -215,9 +215,17 @@ async def get_credit_aging(
     if not business:
         return {"total_outstanding": 0, "aging_buckets": {}}
     
-    summary = get_customer_credit_summary(db, business.id)
+    report = get_aging_report(db, business.id, current_user.branch_id)
     return {
-        "total_outstanding": summary["total_outstanding"],
-        "aging_buckets": summary["aging_buckets"],
+        "total_outstanding": report.total_outstanding,
+        "aging_buckets": [
+            {
+                "bucket": bucket.bucket,
+                "count": bucket.count,
+                "total_amount": bucket.total_amount,
+                "customers": bucket.customers
+            }
+            for bucket in report.buckets
+        ],
     }
 

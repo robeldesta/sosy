@@ -12,7 +12,7 @@ import { useMainButton } from '@/hooks/useMainButton'
 export default function AddProductPage() {
   const { t } = useTranslation()
   const router = useRouter()
-  const { user } = useTelegramWebApp()
+  const { user, webApp } = useTelegramWebApp()
   const [isFormValid, setIsFormValid] = useState(false)
 
   useBackButton()
@@ -20,7 +20,7 @@ export default function AddProductPage() {
   useMainButton({
     text: t('stock.createProduct'),
     isActive: isFormValid,
-    isVisible: true,
+    isVisible: !!webApp, // Only show MainButton in Telegram
     onClick: () => {
       // Form submission handled by AddProductForm
       const form = document.querySelector('form') as HTMLFormElement

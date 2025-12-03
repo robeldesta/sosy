@@ -10,6 +10,7 @@ import { OfflineIndicator } from '@/components/telegram/OfflineIndicator'
 import { SubscriptionWall } from '@/components/subscription/SubscriptionWall'
 import { SyncIndicator } from '@/components/sync/SyncIndicator'
 import { SyncInitializer } from '@/components/sync/SyncInitializer'
+import { WebSocketInitializer } from '@/components/sync/WebSocketInitializer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,6 +27,7 @@ export default function RootLayout({
             <AuthInitializer />
             <OfflineIndicator />
             <SyncInitializer />
+            <WebSocketInitializer />
             <SyncIndicator />
             <SubscriptionWall>{children}</SubscriptionWall>
             <Toast />

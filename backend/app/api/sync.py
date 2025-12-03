@@ -22,14 +22,15 @@ from app.schemas.sync import (
     SyncChange
 )
 from app.api.middleware.subscription import require_active_subscription
+from app.core.config import settings
 
-router = APIRouter(prefix="/sync", tags=["sync"])
+router = APIRouter(tags=["sync"])
 
 
 @router.post("/push", response_model=SyncPushResponse)
 async def sync_push(
     push_data: SyncPushRequest,
-    current_user: User = Depends(require_active_subscription),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -39,7 +40,20 @@ async def sync_push(
     """
     business = get_business_by_user_id(db, current_user.id)
     if not business:
-        raise HTTPException(status_code=404, detail="Business not found")
+        # Auto-create business for user if it doesn't exist
+        from app.services.business import create_business
+        from app.schemas.business import BusinessCreate
+        business = create_business(
+            db,
+            current_user.id,
+            BusinessCreate(
+                name=f"{current_user.first_name or 'My'}'s Shop",
+                business_type="Retail",
+                location="",
+                currency="ETB",
+                tax_type="VAT"
+            )
+        )
     
     # Convert actions to dict format
     actions = [
@@ -74,7 +88,7 @@ async def sync_push(
 @router.get("/pull", response_model=SyncPullResponse)
 async def sync_pull(
     since: Optional[str] = Query(None, description="ISO timestamp of last sync"),
-    current_user: User = Depends(require_active_subscription),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -84,7 +98,20 @@ async def sync_pull(
     """
     business = get_business_by_user_id(db, current_user.id)
     if not business:
-        raise HTTPException(status_code=404, detail="Business not found")
+        # Auto-create business for user if it doesn't exist
+        from app.services.business import create_business
+        from app.schemas.business import BusinessCreate
+        business = create_business(
+            db,
+            current_user.id,
+            BusinessCreate(
+                name=f"{current_user.first_name or 'My'}'s Shop",
+                business_type="Retail",
+                location="",
+                currency="ETB",
+                tax_type="VAT"
+            )
+        )
     
     # Parse since timestamp
     since_dt = None
@@ -130,7 +157,7 @@ async def sync_pull(
 
 @router.get("/state")
 async def get_sync_state(
-    current_user: User = Depends(require_active_subscription),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """Get current sync state for user"""

@@ -136,6 +136,13 @@ async def pos_checkout(
     ]
     
     try:
+        # Validate credit payment requires customer_id
+        if checkout_data.payment_method == "credit" and not checkout_data.customer_id:
+            raise HTTPException(
+                status_code=400,
+                detail="customer_id is required for credit payments"
+            )
+        
         # Process checkout (atomic stock deduction)
         sale = checkout(
             session=db,
@@ -145,6 +152,7 @@ async def pos_checkout(
             payment_method=checkout_data.payment_method,
             customer_name=checkout_data.customer_name,
             customer_phone=checkout_data.customer_phone,
+            customer_id=checkout_data.customer_id,
             discount=checkout_data.discount,
             notes=checkout_data.notes
         )

@@ -211,8 +211,9 @@ def get_sync_changes(
         })
     
     # Stock changes (from inventory movements)
-    movement_statement = select(InventoryMovement).where(
-        InventoryMovement.business_id == business_id,
+    # Filter movements through products that belong to this business
+    movement_statement = select(InventoryMovement).join(Product).where(
+        Product.business_id == business_id,
         InventoryMovement.created_at >= since
     )
     movements = session.exec(movement_statement).all()

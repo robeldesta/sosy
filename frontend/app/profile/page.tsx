@@ -144,7 +144,14 @@ export default function ProfilePage() {
             </label>
             <select
               value={formData.language || 'en'}
-              onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+              onChange={async (e) => {
+                const newLanguage = e.target.value
+                setFormData({ ...formData, language: newLanguage })
+                // Save to localStorage immediately
+                localStorage.setItem('i18nextLng', newLanguage)
+                // Change language immediately for better UX
+                await i18n.changeLanguage(newLanguage)
+              }}
               className="w-full px-[14px] py-[10px] text-[17px] bg-transparent border-b border-[#e5e5e5] dark:border-[#3a3a3a] focus:outline-none focus:border-[#3390ec]"
             >
               {languages.map((lang) => (
@@ -153,6 +160,9 @@ export default function ProfilePage() {
                 </option>
               ))}
             </select>
+            <div className="text-[12px] text-[#707579] mt-[4px]" suppressHydrationWarning>
+              {t('profile.languageHint')}
+            </div>
           </div>
         </TelegramCard>
 
@@ -161,6 +171,19 @@ export default function ProfilePage() {
             {t('profile.telegramId')}: {profile?.telegram_id}
           </div>
         </TelegramCard>
+
+        {/* Save Button - Visible fallback for non-Telegram environments */}
+        {(!webApp?.MainButton || !webApp.MainButton.isVisible) && (
+          <div className="px-[14px] pt-[8px]">
+            <TelegramButton
+              onClick={handleSave}
+              disabled={!isFormValid || saving}
+              fullWidth
+            >
+              {saving ? t('common.saving') : t('common.save')}
+            </TelegramButton>
+          </div>
+        )}
       </div>
     </div>
   )
